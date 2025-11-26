@@ -7,7 +7,7 @@ urlpatterns = [
     # Checkout process
     path('checkout/', views.checkout, name='checkout'),
     
-    # Order success page
+    # Order success 
     path('success/<str:order_number>/', views.order_success, name='order_success'),
     
     # Order management
