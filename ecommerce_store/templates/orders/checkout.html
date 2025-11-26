@@ -1,0 +1,154 @@
+{% extends 'base.html' %}
+
+{% block title %}Checkout - E-Commerce Store{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2><i class="fas fa-credit-card"></i> Checkout</h2>
+    
+    <div class="row">
+        <!-- Checkout Form -->
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Billing Information</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="first_name" class="form-label">First Name *</label>
+                                <input type="text" name="first_name" class="form-control" required 
+                                       value="{{ user.first_name }}">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="last_name" class="form-label">Last Name *</label>
+                                <input type="text" name="last_name" class="form-control" required
+                                       value="{{ user.last_name }}">
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email *</label>
+                            <input type="email" name="email" class="form-control" required
+                                   value="{{ user.email }}">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="phone" class="form-label">Phone *</label>
+                            <input type="tel" name="phone" class="form-control" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="address_line_1" class="form-label">Address Line 1 *</label>
+                            <input type="text" name="address_line_1" class="form-control" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="address_line_2" class="form-label">Address Line 2</label>
+                            <input type="text" name="address_line_2" class="form-control">
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="city" class="form-label">City *</label>
+                                <input type="text" name="city" class="form-control" required>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label for="state" class="form-label">Province *</label>
+                                <input type="text" name="state" class="form-control" required>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label for="postal_code" class="form-label">Postal Code *</label>
+                                <input type="text" name="postal_code" class="form-control" required>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="country" class="form-label">Country *</label>
+                            <select name="country" class="form-select" required>
+                                <option value="">Select Country</option>
+                                <option value="NP" selected>Nepal</option>
+                                <option value="IN">India</option>
+                                <option value="BD">Bangladesh</option>
+                                <option value="PK">Pakistan</option>
+                                <option value="US">United States</option>
+                                <option value="CA">Canada</option>
+                                <option value="UK">United Kingdom</option>
+                                <!-- Add more countries as needed -->
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="notes" class="form-label">Order Notes</label>
+                            <textarea name="notes" class="form-control" rows="3" 
+                                      placeholder="Special instructions for your order..."></textarea>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-success btn-lg w-100">
+                            <i class="fas fa-lock"></i> Place Order
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Order Summary -->
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Order Summary</h5>
+                </div>
+                <div class="card-body">
+                    {% if cart_items %}
+                        {% for item in cart_items %}
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <div>
+                                    <h6 class="mb-0">{{ item.product.name }}</h6>
+                                    <small class="text-muted">Qty: {{ item.quantity }}</small>
+                                </div>
+                                <span>Rs {{ item.total_price|floatformat:2 }}</span>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted">No items in cart</p>
+                    {% endif %}
+                    
+                    <hr>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Subtotal:</span>
+                        <span>Rs {{ subtotal|floatformat:2|default:"0.00" }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Shipping:</span>
+                        <span>
+                            {% if shipping_cost and shipping_cost > 0 %}
+                                Rs {{ shipping_cost|floatformat:2 }}
+                            {% else %}
+                                Free
+                            {% endif %}
+                        </span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Tax ({{ tax_rate|floatformat:0|default:"0" }}%):</span>
+                        <span>Rs {{ tax_amount|floatformat:2|default:"0.00" }}</span>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between">
+                        <strong>Total:</strong>
+                        <strong class="text-success">Rs {{ total_amount|floatformat:2|default:"0.00" }}</strong>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card mt-3">
+                <div class="card-body text-center">
+                    <i class="fas fa-shield-alt fa-2x text-success mb-2"></i>
+                    <p class="mb-0"><small>Secure checkout powered by SSL encryption</small></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,345 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Order Confirmation - {{ order.order_number }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .success-container {
+        max-width: 800px;
+        margin: 2rem auto;
+        padding: 2rem;
+        background: #f8f9fa;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    .success-header {
+        text-align: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid #28a745;
+    }
+    
+    .success-icon {
+        font-size: 4rem;
+        color: #28a745;
+        margin-bottom: 1rem;
+    }
+    
+    .order-details-card {
+        background: white;
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    .order-summary {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .summary-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid #e9ecef;
+    }
+    
+    .summary-item:last-child {
+        border-bottom: none;
+        font-weight: bold;
+        font-size: 1.1rem;
+        color: #28a745;
+    }
+    
+    .order-items-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 1rem;
+    }
+    
+    .order-items-table th,
+    .order-items-table td {
+        padding: 1rem;
+        text-align: left;
+        border-bottom: 1px solid #e9ecef;
+    }
+    
+    .order-items-table th {
+        background-color: #f8f9fa;
+        font-weight: 600;
+        color: #495057;
+    }
+    
+    .product-info {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    
+    .product-image {
+        width: 60px;
+        height: 60px;
+        object-fit: cover;
+        border-radius: 5px;
+    }
+    
+    .address-section {
+        background: #e8f5e8;
+        padding: 1rem;
+        border-radius: 5px;
+        margin-top: 1rem;
+    }
+    
+    .btn-group {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        margin-top: 2rem;
+    }
+    
+    .btn-primary, .btn-secondary {
+        padding: 0.75rem 2rem;
+        border: none;
+        border-radius: 5px;
+        text-decoration: none;
+        text-align: center;
+        font-weight: 500;
+        transition: background-color 0.3s;
+    }
+    
+    .btn-primary {
+        background-color: #007bff;
+        color: white;
+    }
+    
+    .btn-primary:hover {
+        background-color: #0056b3;
+        color: white;
+        text-decoration: none;
+    }
+    
+    .btn-secondary {
+        background-color: #6c757d;
+        color: white;
+    }
+    
+    .btn-secondary:hover {
+        background-color: #545b62;
+        color: white;
+        text-decoration: none;
+    }
+    
+    .status-badge {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        text-transform: uppercase;
+    }
+    
+    .status-pending {
+        background-color: #fff3cd;
+        color: #856404;
+        border: 1px solid #ffeaa7;
+    }
+    
+    .status-confirmed {
+        background-color: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+    }
+    
+    @media (max-width: 768px) {
+        .success-container {
+            margin: 1rem;
+            padding: 1rem;
+        }
+        
+        .order-summary {
+            grid-template-columns: 1fr;
+        }
+        
+        .order-items-table {
+            font-size: 0.875rem;
+        }
+        
+        .btn-group {
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .btn-primary, .btn-secondary {
+            width: 100%;
+            max-width: 300px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="success-container">
+    <!-- Success Header -->
+    <div class="success-header">
+        <div class="success-icon">✅</div>
+        <h1 class="text-success">Order Placed Successfully!</h1>
+        <p class="lead">Thank you for your order, {{ customer_name }}!</p>
+        <p class="text-muted">Your order has been received and is being processed.</p>
+    </div>
+
+    <!-- Order Information -->
+    <div class="order-details-card">
+        <h3 class="mb-3">Order Information</h3>
+        <div class="order-summary">
+            <div>
+                <strong>Order Number:</strong><br>
+                <span class="text-primary">#{{ order.order_number }}</span>
+            </div>
+            <div>
+                <strong>Order Date:</strong><br>
+                {{ order.created_at|date:"F d, Y" }} at {{ order.created_at|time:"g:i A" }}
+            </div>
+            <div>
+                <strong>Payment Status:</strong><br>
+                <span class="status-badge {% if order.payment_status == 'confirmed' %}status-confirmed{% else %}status-pending{% endif %}">
+                    {{ order.payment_status|capfirst }}
+                </span>
+            </div>
+            <div>
+                <strong>Total Items:</strong><br>
+                {{ items_count }} item{{ items_count|pluralize }}
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Items -->
+    <div class="order-details-card">
+        <h3 class="mb-3">Order Items</h3>
+        <table class="order-items-table">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in order_items %}
+                <tr>
+                    <td>
+                        <div class="product-info">
+                            {% if item.product.main_image %}
+                                <img src="{{ item.product.main_image.url }}" alt="{{ item.product.name }}" class="product-image">
+                            {% else %}
+                                <div class="product-image" style="background-color: #f8f9fa; display: flex; align-items: center; justify-content: center; color: #6c757d; font-size: 0.75rem;">
+                                    No Image
+                                </div>
+                            {% endif %}
+                            <div>
+                                <strong>{{ item.product.name }}</strong>
+                                {% if item.product.brand %}
+                                    <br><small class="text-muted">{{ item.product.brand }}</small>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </td>
+                    <td>{{ item.quantity }}</td>
+                    <td>NPR {{ item.price|floatformat:2 }}</td>
+                    <td><strong>NPR {{ item.total_price|floatformat:2 }}</strong></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Order Summary -->
+    <div class="order-details-card">
+        <h3 class="mb-3">Order Summary</h3>
+        <div class="summary-item">
+            <span>Subtotal:</span>
+            <span>NPR {{ order.subtotal|floatformat:2 }}</span>
+        </div>
+        <div class="summary-item">
+            <span>Tax (13%):</span>
+            <span>NPR {{ order.tax_amount|floatformat:2 }}</span>
+        </div>
+        <div class="summary-item">
+            <span>Shipping:</span>
+            <span>
+                {% if order.shipping_cost == 0 %}
+                    <span class="text-success">Free</span>
+                {% else %}
+                    NPR {{ order.shipping_cost|floatformat:2 }}
+                {% endif %}
+            </span>
+        </div>
+        <div class="summary-item">
+            <span>Total Amount:</span>
+            <span>NPR {{ order.total_amount|floatformat:2 }}</span>
+        </div>
+    </div>
+
+    <!-- Delivery Information -->
+    <div class="order-details-card">
+        <h3 class="mb-3">Delivery Information</h3>
+        <div class="address-section">
+            <strong>{{ customer_name }}</strong><br>
+            {{ delivery_address.line_1 }}<br>
+            {% if delivery_address.line_2 %}
+                {{ delivery_address.line_2 }}<br>
+            {% endif %}
+            {{ delivery_address.city }}, {{ delivery_address.state }} {{ delivery_address.postal_code }}<br>
+            {{ delivery_address.country }}<br>
+            <strong>Phone:</strong> {{ order.phone }}<br>
+            <strong>Email:</strong> {{ order.email }}
+        </div>
+        
+        {% if order.notes %}
+        <div class="mt-3">
+            <strong>Order Notes:</strong><br>
+            <em>{{ order.notes }}</em>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Next Steps -->
+    <div class="order-details-card">
+        <h3 class="mb-3">What's Next?</h3>
+        <ul class="list-unstyled">
+            <li class="mb-2">📧 <strong>Confirmation Email:</strong> You'll receive an email confirmation shortly with your order details.</li>
+            <li class="mb-2">📦 <strong>Processing:</strong> We'll process your order within 1-2 business days.</li>
+            <li class="mb-2">🚚 <strong>Shipping:</strong> You'll receive tracking information once your order ships.</li>
+            <li class="mb-2">📞 <strong>Questions?</strong> Contact us if you have any questions about your order.</li>
+        </ul>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="btn-group">
+        <a href="{% url 'orders:order_detail' order.order_number %}" class="btn-primary">View Order Details</a>
+        <a href="{% url 'orders:order_list' %}" class="btn-secondary">My Orders</a>
+        <a href="{% url 'home' %}" class="btn-secondary">Continue Shopping</a>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Auto-scroll to top
+    window.scrollTo(0, 0);
+    
+    // Optional: Print functionality
+    function printOrder() {
+        window.print();
+    }
+    
+  
+});
+</script>
+{% endblock %}

@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Login - E-Commerce Store{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header text-center">
+                    <h3><i class="fas fa-sign-in-alt"></i> Login</h3>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="id_username" class="form-label">Username:</label>
+                            <input type="text" name="username" class="form-control" id="id_username" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="id_password" class="form-label">Password:</label>
+                            <input type="password" name="password" class="form-control" id="id_password" required>
+                        </div>
+                        
+                        {% if form.errors %}
+                            <div class="alert alert-danger">
+                                {{ form.errors }}
+                            </div>
+                        {% endif %}
+                        
+                        <button type="submit" class="btn btn-primary w-100 mb-3">
+                            <i class="fas fa-sign-in-alt"></i> Login
+                        </button>
+                    </form>
+                    
+                    <div class="text-center">
+                        <p>Don't have an account? <a href="{% url 'accounts:register' %}">Register here</a></p>
+                        <a href="#" class="text-muted">Forgot your password?</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

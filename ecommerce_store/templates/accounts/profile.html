@@ -1,0 +1,308 @@
+{% extends 'base.html' %}
+
+{% block title %}Profile - E-Commerce Store{% endblock %}
+
+{% block content %}
+<style>
+    .profile-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 2rem 0;
+        margin-bottom: 2rem;
+        border-radius: 0.5rem;
+    }
+    .profile-avatar {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        border: 4px solid white;
+        object-fit: cover;
+        background-color: #667eea;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3rem;
+        font-weight: bold;
+        margin: 0 auto;
+    }
+    .profile-card {
+        border: none;
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        border-radius: 0.5rem;
+    }
+    .profile-card .card-header {
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #dee2e6;
+        font-weight: 600;
+    }
+    .info-row {
+        padding: 0.75rem 0;
+        border-bottom: 1px solid #f1f3f4;
+    }
+    .info-row:last-child {
+        border-bottom: none;
+    }
+    .info-label {
+        font-weight: 600;
+        color: #495057;
+    }
+    .info-value {
+        color: #6c757d;
+    }
+    .btn-edit {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+    }
+    .btn-edit:hover {
+        background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+        color: white;
+    }
+    .stats-card {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        color: white;
+        border-radius: 1rem;
+    }
+    .stats-card .card-body {
+        text-align: center;
+    }
+    .stats-number {
+        font-size: 2rem;
+        font-weight: bold;
+    }
+</style>
+
+<!-- Profile Header -->
+<div class="profile-header">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-3 text-center">
+                <div class="profile-avatar">
+                    {{ user.first_name|first|upper|default:user.username|first|upper }}{{ user.last_name|first|upper|default:"" }}
+                </div>
+            </div>
+            <div class="col-md-6">
+                <h2 class="mb-1">{{ user.get_full_name|default:user.username }}</h2>
+                <p class="mb-2"><i class="fas fa-envelope me-2"></i>{{ user.email }}</p>
+                <p class="mb-0"><i class="fas fa-calendar-alt me-2"></i>Member since {{ user.date_joined|date:"F Y" }}</p>
+            </div>
+            <div class="col-md-3 text-center">
+                <a href="{% url 'accounts:edit_profile' %}" class="btn btn-light btn-lg">
+                    <i class="fas fa-edit me-2"></i>Edit Profile
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Stats Cards -->
+    <div class="col-md-4 mb-4">
+        <div class="card stats-card">
+            <div class="card-body">
+                <div class="stats-number">{{ total_orders|default:0 }}</div>
+                <div>Total Orders</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card stats-card">
+            <div class="card-body">
+                <div class="stats-number">Rs {{ total_spent|default:0 }}</div>
+                <div>Total Spent</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card stats-card">
+            <div class="card-body">
+                <div class="stats-number">{{ cart_items|default:0 }}</div>
+                <div>Items in Cart</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Personal Information -->
+    <div class="col-md-6 mb-4">
+        <div class="card profile-card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-user me-2"></i>Personal Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="info-row">
+                    <div class="row">
+                        <div class="col-sm-4 info-label">Username:</div>
+                        <div class="col-sm-8 info-value">{{ user.username }}</div>
+                    </div>
+                </div>
+                <div class="info-row">
+                    <div class="row">
+                        <div class="col-sm-4 info-label">Full Name:</div>
+                        <div class="col-sm-8 info-value">{{ user.get_full_name|default:"Not provided" }}</div>
+                    </div>
+                </div>
+                <div class="info-row">
+                    <div class="row">
+                        <div class="col-sm-4 info-label">Email:</div>
+                        <div class="col-sm-8 info-value">{{ user.email }}</div>
+                    </div>
+                </div>
+                <div class="info-row">
+                    <div class="row">
+                        <div class="col-sm-4 info-label">Date Joined:</div>
+                        <div class="col-sm-8 info-value">{{ user.date_joined|date:"F d, Y" }}</div>
+                    </div>
+                </div>
+                <div class="info-row">
+                    <div class="row">
+                        <div class="col-sm-4 info-label">Last Login:</div>
+                        <div class="col-sm-8 info-value">{{ user.last_login|date:"F d, Y H:i"|default:"Never" }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Account Status -->
+    <div class="col-md-6 mb-4">
+        <div class="card profile-card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Account Status</h5>
+            </div>
+            <div class="card-body">
+                <div class="info-row">
+                    <div class="row">
+                        <div class="col-sm-4 info-label">Account Status:</div>
+                        <div class="col-sm-8 info-value">
+                            {% if user.is_active %}
+                                <span class="badge bg-success">Active</span>
+                            {% else %}
+                                <span class="badge bg-danger">Inactive</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="info-row">
+                    <div class="row">
+                        <div class="col-sm-4 info-label">Email Verified:</div>
+                        <div class="col-sm-8 info-value">
+                            {% if user.email %}
+                                <span class="badge bg-success">Verified</span>
+                            {% else %}
+                                <span class="badge bg-warning">Not Verified</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="info-row">
+                    <div class="row">
+                        <div class="col-sm-4 info-label">Staff Status:</div>
+                        <div class="col-sm-8 info-value">
+                            {% if user.is_staff %}
+                                <span class="badge bg-info">Staff Member</span>
+                            {% else %}
+                                <span class="badge bg-secondary">Regular User</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Orders -->
+{% if recent_orders %}
+<div class="row">
+    <div class="col-12">
+        <div class="card profile-card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="fas fa-shopping-bag me-2"></i>Recent Orders</h5>
+                <a href="{% url 'orders:order_list' %}" class="btn btn-sm btn-edit">View All Orders</a>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Order Number</th>
+                                <th>Date</th>
+                                <th>Items</th>
+                                <th>Total</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for order in recent_orders %}
+                            <tr>
+                                <td>#{{ order.order_number }}</td>
+                                <td>{{ order.created_at|date:"M d, Y" }}</td>
+                                <td>{{ order.items.count }} items</td>
+                                <td>Rs {{ order.total_amount|floatformat:2 }}</td>
+                                <td>
+                                    {% if order.payment_status == 'completed' %}
+                                        <span class="badge bg-success">Paid</span>
+                                    {% elif order.payment_status == 'pending' %}
+                                        <span class="badge bg-warning">Pending</span>
+                                    {% elif order.payment_status == 'failed' %}
+                                        <span class="badge bg-danger">Failed</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">{{ order.payment_status|title }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a href="{% url 'orders:order_detail' order.order_number %}" class="btn btn-sm btn-outline-primary">View</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Account Actions -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card profile-card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-cogs me-2"></i>Account Actions</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <a href="{% url 'accounts:edit_profile' %}" class="btn btn-edit w-100">
+                            <i class="fas fa-edit me-2"></i>Edit Profile
+                        </a>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <a href="{% url 'accounts:password_change' %}" class="btn btn-outline-secondary w-100">
+                            <i class="fas fa-key me-2"></i>Change Password
+                        </a>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <button class="btn btn-outline-danger w-100" onclick="confirmDelete()">
+                            <i class="fas fa-trash me-2"></i>Delete Account
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function confirmDelete() {
+    if (confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+        window.location.href = "{% url 'accounts:delete_account' %}";
+    }
+}
+</script>
+
+{% endblock %}
